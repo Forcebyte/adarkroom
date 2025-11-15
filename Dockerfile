@@ -5,7 +5,9 @@ COPY . /usr/share/nginx/html/
 
 # Copy custom entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+
+# Verify the entrypoint script exists and is executable
+RUN ls -l /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 # Expose port 80
 EXPOSE 80
