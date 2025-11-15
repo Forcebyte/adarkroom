@@ -10,6 +10,3 @@ RUN rm -f /usr/share/nginx/html/Dockerfile \
 
 # Expose port 80
 EXPOSE 80
-
-# Use the standard nginx entrypoint
-CMD ["nginx", "-g", "daemon off;"]
