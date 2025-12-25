@@ -1,10 +1,27 @@
-FROM --platform=$BUILDPLATFORM nginx:alpine
+FROM alpine:latest
 
-#Copy the web application files to nginx html directory
-COPY --exclude=Dockerfile --exclude=.git . /usr/share/nginx/html/
+# Install nginx
+RUN apk add --no-cache nginx
 
-#Expose Nginx Port
+# Create necessary directories
+RUN mkdir -p /run/nginx /var/www/html
+
+# Copy the web application files
+COPY --exclude=Dockerfile --exclude=docker-entrypoint.sh --exclude=.git . /var/www/html/
+
+# Create nginx configuration
+RUN echo 'server {' > /etc/nginx/http.d/default.conf && \
+    echo '    listen 80 default_server;' >> /etc/nginx/http.d/default.conf && \
+    echo '    listen [::]:80 default_server;' >> /etc/nginx/http.d/default.conf && \
+    echo '    root /var/www/html;' >> /etc/nginx/http.d/default.conf && \
+    echo '    index index.html;' >> /etc/nginx/http.d/default.conf && \
+    echo '    location / {' >> /etc/nginx/http.d/default.conf && \
+    echo '        try_files $uri $uri/ /index.html;' >> /etc/nginx/http.d/default.conf && \
+    echo '    }' >> /etc/nginx/http.d/default.conf && \
+    echo '}' >> /etc/nginx/http.d/default.conf
+
+# Expose Nginx Port
 EXPOSE 80
 
-#Start NginxService (nginx:alpine already has its own entrypoint)
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
